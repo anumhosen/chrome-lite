@@ -160,7 +160,7 @@ export const PanelRenderer: React.FC<{ panel: string; mode?: 'drawer' | 'tab' | 
       case 'memory':
         return <SystemDashboardPanel />;
       case 'settings':
-        return <SettingsPanel />;
+        return <SettingsPanel mode={mode} />;
       case 'userscripts':
         return <UserscriptsPanel />;
       case 'scraperBuilder':
@@ -178,7 +178,7 @@ export const PanelRenderer: React.FC<{ panel: string; mode?: 'drawer' | 'tab' | 
     }
   };
 
-  const isFormPanel = norm === 'settings' || norm === 'memory' || norm === 'scraperBuilder';
+  const isFormPanel = norm === 'memory' || norm === 'scraperBuilder';
 
   return (
     <div

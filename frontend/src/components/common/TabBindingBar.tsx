@@ -74,7 +74,7 @@ export const TabBindingBar: React.FC<TabBindingBarProps> = ({ className = '', on
           <div className="flex items-center gap-2 flex-1">
             <span className="text-amber-600 dark:text-amber-400 text-[11px] italic">No active web pages</span>
             <button
-              onClick={() => createTab('https://duckduckgo.com')}
+              onClick={() => createTab('chrome://newtab')}
               className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 hover:bg-sky-500/20 font-medium"
             >
               + Open Web Page

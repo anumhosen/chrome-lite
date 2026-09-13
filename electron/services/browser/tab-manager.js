@@ -14,7 +14,7 @@ class TabManager {
   }
 
   createTab({ url, workspaceId, profileId = "default", active = true } = {}) {
-    let targetUrl = url || config.get("newTabUrl") || config.get("homepage", "https://duckduckgo.com");
+    let targetUrl = url || config.get("newTabUrl") || config.get("homepage", "chrome://newtab");
     if (targetUrl.startsWith("chrome://")) {
       targetUrl = "chrome://" + targetUrl.slice(9);
     }
@@ -25,6 +25,8 @@ class TabManager {
     if (targetUrl.startsWith("chrome://")) {
       const page = targetUrl.replace("chrome://", "").split("/")[0].toLowerCase();
       const TITLES = {
+        newtab: "New Tab",
+        home: "New Tab",
         settings: "Settings",
         history: "History",
         downloads: "Downloads",
@@ -170,7 +172,7 @@ class TabManager {
       const restoredTabs = [];
       for (const t of parsed.tabs) {
         const restored = this.createTab({
-          url: t.url || "https://duckduckgo.com",
+          url: t.url || "chrome://newtab",
           workspaceId: t.workspaceId || "personal",
           profileId: t.profileId || "default",
           active: false

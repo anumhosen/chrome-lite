@@ -1,9 +1,15 @@
-import React from 'react';
-import { VscColorMode } from 'react-icons/vsc';
+import React, { useState } from 'react';
+import { VscColorMode, VscBookmark, VscLayoutSidebarLeft, VscHome } from 'react-icons/vsc';
+import { ChromeSettingsCard, ChromeSettingsRow } from './ChromeSettingsCard';
+import { ChromeToggle } from './ChromeToggle';
 import { useThemeStore } from '../../../stores/useThemeStore';
 import { useSettingsStore } from '../../../stores/useSettingsStore';
 
-export const AppearanceSettings: React.FC = () => {
+interface AppearanceSettingsProps {
+  onNotify?: (msg: string) => void;
+}
+
+export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({ onNotify }) => {
   const { theme, setTheme } = useThemeStore();
   const {
     showStatusBar,
@@ -14,70 +20,129 @@ export const AppearanceSettings: React.FC = () => {
     setShowDeveloperSidebar,
   } = useSettingsStore();
 
+  const [showHomeButton, setShowHomeButton] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('chrome_show_home_button') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const handleToggleHomeButton = (checked: boolean) => {
+    setShowHomeButton(checked);
+    try {
+      localStorage.setItem('chrome_show_home_button', String(checked));
+    } catch {}
+    onNotify?.(`Home button ${checked ? 'enabled' : 'disabled'}`);
+  };
+
   return (
-    <div className="p-3 bg-gray-50 dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 rounded-md flex flex-col gap-2.5">
-      <span className="font-semibold text-gray-700 dark:text-neutral-300 uppercase tracking-wider text-[10.5px]">
-        Appearance & Interface
-      </span>
+    <ChromeSettingsCard
+      id="section-appearance"
+      title="Appearance"
+      icon={<VscColorMode />}
+      description="Customize Chrome Lite colors, theme mode, and toolbar controls."
+    >
+      {/* Theme Mode Selector */}
+      <ChromeSettingsRow
+        icon={<VscColorMode />}
+        label="Theme"
+        description="Choose between Chrome Dark Mode and Light Mode with instant visual preview."
+        control={
+          <div className="flex items-center gap-1.5 p-0.5 rounded-xl bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700">
+            <button
+              onClick={() => {
+                setTheme('light');
+                onNotify?.('Switched to Light theme');
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                theme === 'light'
+                  ? 'bg-white text-sky-600 shadow-xs border border-gray-200'
+                  : 'text-gray-600 dark:text-neutral-400 hover:text-gray-900'
+              }`}
+            >
+              Light
+            </button>
+            <button
+              onClick={() => {
+                setTheme('dark');
+                onNotify?.('Switched to Dark theme');
+              }}
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                theme === 'dark'
+                  ? 'bg-neutral-900 text-sky-400 shadow-xs border border-neutral-700'
+                  : 'text-gray-600 dark:text-neutral-400 hover:text-neutral-200'
+              }`}
+            >
+              Dark
+            </button>
+          </div>
+        }
+      />
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-gray-600 dark:text-neutral-400 text-[11px] flex items-center gap-1.5">
-          <VscColorMode size={13} />
-          <span>Theme Mode</span>
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() => setTheme('dark')}
-            className={`py-1.5 px-3 rounded flex items-center justify-center gap-2 border text-xs font-medium transition-colors ${
-              theme === 'dark'
-                ? 'bg-sky-500/15 border-sky-500 text-sky-400'
-                : 'bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-neutral-200'
-            }`}
-          >
-            <span>Dark Theme</span>
-          </button>
-          <button
-            onClick={() => setTheme('light')}
-            className={`py-1.5 px-3 rounded flex items-center justify-center gap-2 border text-xs font-medium transition-colors ${
-              theme === 'light'
-                ? 'bg-sky-500/15 border-sky-500 text-sky-600 dark:text-sky-400'
-                : 'bg-white dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-neutral-200'
-            }`}
-          >
-            <span>Light Theme</span>
-          </button>
-        </div>
-      </div>
+      {/* Show Bookmarks Bar */}
+      <ChromeSettingsRow
+        icon={<VscBookmark />}
+        label="Show bookmarks bar"
+        description="Displays quick-access bookmarks directly under the address bar (Ctrl+Shift+B)."
+        control={
+          <ChromeToggle
+            checked={showBookmarksBar}
+            onChange={(c) => {
+              setShowBookmarksBar(c);
+              onNotify?.(`Bookmarks bar ${c ? 'shown' : 'hidden'}`);
+            }}
+            title="Show bookmarks bar"
+          />
+        }
+      />
 
-      <label className="flex items-center justify-between cursor-pointer text-gray-800 dark:text-neutral-300 pt-1">
-        <span className="text-[11.5px]">Show Bookmarks bar (Ctrl+Shift+B)</span>
-        <input
-          type="checkbox"
-          checked={showBookmarksBar}
-          onChange={(e) => setShowBookmarksBar(e.target.checked)}
-          className="accent-sky-500 rounded"
-        />
-      </label>
+      {/* Show Home Button */}
+      <ChromeSettingsRow
+        icon={<VscHome />}
+        label="Show home button"
+        description="Displays the home button on the toolbar to quickly return to your homepage or New Tab."
+        control={
+          <ChromeToggle
+            checked={showHomeButton}
+            onChange={handleToggleHomeButton}
+            title="Show home button"
+          />
+        }
+      />
 
-      <label className="flex items-center justify-between cursor-pointer text-gray-800 dark:text-neutral-300 pt-1">
-        <span className="text-[11.5px]">Show Developer Sidebar (VS Code style activity bar)</span>
-        <input
-          type="checkbox"
-          checked={showDeveloperSidebar}
-          onChange={(e) => setShowDeveloperSidebar(e.target.checked)}
-          className="accent-sky-500 rounded"
-        />
-      </label>
+      {/* Developer Sidebar */}
+      <ChromeSettingsRow
+        icon={<VscLayoutSidebarLeft />}
+        label="Show Developer Activity Bar"
+        description="Displays the VS Code-style quick navigation sidebar on the far left edge."
+        control={
+          <ChromeToggle
+            checked={showDeveloperSidebar}
+            onChange={(c) => {
+              setShowDeveloperSidebar(c);
+              onNotify?.(`Developer sidebar ${c ? 'shown' : 'hidden'}`);
+            }}
+            title="Show Developer Activity Bar"
+          />
+        }
+      />
 
-      <label className="flex items-center justify-between cursor-pointer text-gray-800 dark:text-neutral-300 pt-1">
-        <span className="text-[11.5px]">Show bottom status bar</span>
-        <input
-          type="checkbox"
-          checked={showStatusBar}
-          onChange={(e) => setShowStatusBar(e.target.checked)}
-          className="accent-sky-500 rounded"
-        />
-      </label>
-    </div>
+      {/* Status Bar */}
+      <ChromeSettingsRow
+        label="Show status bar"
+        description="Displays URL hover targets and zoom levels at the bottom edge."
+        control={
+          <ChromeToggle
+            checked={showStatusBar}
+            onChange={(c) => {
+              setShowStatusBar(c);
+              onNotify?.(`Status bar ${c ? 'shown' : 'hidden'}`);
+            }}
+            title="Show status bar"
+          />
+        }
+      />
+    </ChromeSettingsCard>
   );
 };

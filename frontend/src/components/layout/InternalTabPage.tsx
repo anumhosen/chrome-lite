@@ -10,8 +10,8 @@ interface InternalTabPageProps {
 export const InternalTabPage: React.FC<InternalTabPageProps> = ({ url }) => {
   const norm = normalizePanelName(url);
   const title = PANEL_TITLES[norm] || `${norm.charAt(0).toUpperCase() + norm.slice(1)}`;
-  const isNativeChromePage = ['newtab', 'extensions', 'apps'].includes(norm);
-  const isFullWidth = ['notebook', 'explorer', 'interceptor', 'console', 'scraperBuilder', 'newtab', 'extensions', 'apps'].includes(norm);
+  const isNativeChromePage = ['newtab', 'extensions', 'apps', 'settings'].includes(norm);
+  const isFullWidth = ['notebook', 'explorer', 'interceptor', 'console', 'scraperBuilder', 'newtab', 'extensions', 'apps', 'settings'].includes(norm);
 
   let targetTabFromUrl: string | null = null;
   try {
@@ -41,7 +41,7 @@ export const InternalTabPage: React.FC<InternalTabPageProps> = ({ url }) => {
 
   if (isNativeChromePage) {
     return (
-      <div className={`w-full h-full bg-white dark:bg-neutral-900 ${norm === 'newtab' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+      <div className={`w-full h-full bg-white dark:bg-neutral-900 ${['newtab', 'settings'].includes(norm) ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         <PanelRenderer panel={norm} mode="tab" />
       </div>
     );

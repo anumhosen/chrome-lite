@@ -40,6 +40,7 @@ const getChromeTabTitle = (url: string): string => {
     const page = url.replace(/^(chrome|chrome):\/\//i, '').split('/')[0].toLowerCase();
     const TITLES: Record<string, string> = {
       newtab: 'New Tab',
+      home: 'New Tab',
       extensions: 'Extensions',
       apps: 'Apps',
       settings: 'Settings',
@@ -80,8 +81,8 @@ export const useTabStore = create<TabState>((set, get) => ({
         try {
           const localNewTab = localStorage.getItem('chrome_new_tab_url');
           const localHome = localStorage.getItem('chrome_homepage');
-          if (localNewTab) fallbackUrl = localNewTab;
-          else if (localHome) fallbackUrl = localHome;
+          if (localNewTab && !localNewTab.includes('duckduckgo.com')) fallbackUrl = localNewTab;
+          else if (localHome && !localHome.includes('duckduckgo.com')) fallbackUrl = localHome;
         } catch { }
         set({
           tabs: [{ id: 'tab-1', title: 'New Tab', url: fallbackUrl, isLoading: false }],
@@ -153,8 +154,16 @@ export const useTabStore = create<TabState>((set, get) => ({
     let targetUrl = url;
     if (!targetUrl) {
       try {
-        const localNewTab = localStorage.getItem('chrome_new_tab_url');
-        const localHome = localStorage.getItem('chrome_homepage');
+        let localNewTab = localStorage.getItem('chrome_new_tab_url');
+        let localHome = localStorage.getItem('chrome_homepage');
+        if (localNewTab && localNewTab.includes('duckduckgo.com')) {
+          localStorage.removeItem('chrome_new_tab_url');
+          localNewTab = null;
+        }
+        if (localHome && localHome.includes('duckduckgo.com')) {
+          localStorage.removeItem('chrome_homepage');
+          localHome = null;
+        }
         if (localNewTab) {
           targetUrl = localNewTab;
         } else if (localHome) {
@@ -162,11 +171,11 @@ export const useTabStore = create<TabState>((set, get) => ({
         } else if (api?.system?.getConfig) {
           const cfg = await api.system.getConfig();
           const remote = cfg?.settings?.newTabUrl || cfg?.settings?.homepage || cfg?.newTabUrl || cfg?.homepage;
-          if (remote) targetUrl = remote;
+          if (remote && !remote.includes('duckduckgo.com')) targetUrl = remote;
         }
       } catch { }
     }
-    if (!targetUrl) targetUrl = 'chrome://newtab';
+    if (!targetUrl || targetUrl.includes('duckduckgo.com')) targetUrl = 'chrome://newtab';
     if (targetUrl.startsWith('chrome://')) {
       targetUrl = 'chrome://' + targetUrl.slice(9);
     }

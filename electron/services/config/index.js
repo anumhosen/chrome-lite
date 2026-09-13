@@ -13,9 +13,16 @@ class ConfigService {
       if (fs.existsSync(this.configPath)) {
         const raw = fs.readFileSync(this.configPath, "utf-8");
         const parsed = JSON.parse(raw);
+        const settings = { ...this.defaultConfig.settings, ...(parsed.settings || {}) };
+        if (settings.homepage && settings.homepage.includes("duckduckgo.com")) {
+          settings.homepage = "chrome://newtab";
+        }
+        if (settings.newTabUrl && settings.newTabUrl.includes("duckduckgo.com")) {
+          settings.newTabUrl = "chrome://newtab";
+        }
         return {
           features: { ...this.defaultConfig.features, ...(parsed.features || {}) },
-          settings: { ...this.defaultConfig.settings, ...(parsed.settings || {}) }
+          settings
         };
       }
     } catch (err) {

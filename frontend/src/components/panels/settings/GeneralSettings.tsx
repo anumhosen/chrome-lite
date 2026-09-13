@@ -19,14 +19,18 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
   onNotify,
 }) => {
   const [homepageInput, setHomepageInput] = useState(
-    config.homepage || 'https://duckduckgo.com'
+    config.homepage && !config.homepage.includes('duckduckgo.com')
+      ? config.homepage
+      : 'chrome://newtab'
   );
   const [newTabInput, setNewTabInput] = useState(
-    config.newTabUrl || config.homepage || 'https://duckduckgo.com'
+    config.newTabUrl && !config.newTabUrl.includes('duckduckgo.com')
+      ? config.newTabUrl
+      : 'chrome://newtab'
   );
 
   const handleSearchEngineChange = async (engineUrl: string) => {
-    const newUrl = ENGINE_HOMEPAGES[engineUrl] || 'https://duckduckgo.com';
+    const newUrl = ENGINE_HOMEPAGES[engineUrl] || 'chrome://newtab';
     setHomepageInput(newUrl);
     setNewTabInput(newUrl);
 
@@ -38,7 +42,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
   };
 
   const handleHomepageSave = async () => {
-    const trimmed = homepageInput.trim() || 'https://duckduckgo.com';
+    const trimmed = homepageInput.trim() || 'chrome://newtab';
     setHomepageInput(trimmed);
     setNewTabInput(trimmed);
     await onUpdateSetting('homepage', trimmed);
@@ -47,7 +51,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
   };
 
   const handleNewTabSave = async () => {
-    const trimmed = newTabInput.trim() || 'https://duckduckgo.com';
+    const trimmed = newTabInput.trim() || 'chrome://newtab';
     setNewTabInput(trimmed);
     await onUpdateSetting('newTabUrl', trimmed);
     onNotify(`New tab URL saved as "${trimmed}"`);
@@ -86,7 +90,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
               (e.target as HTMLInputElement).blur();
             }
           }}
-          placeholder="https://duckduckgo.com"
+          placeholder="chrome://newtab"
           className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-800 rounded px-2 py-1 text-gray-900 dark:text-neutral-200 outline-none focus:border-sky-500 text-xs"
         />
         <span className="text-[10px] text-gray-500 dark:text-neutral-500">
@@ -107,7 +111,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
               (e.target as HTMLInputElement).blur();
             }
           }}
-          placeholder="https://duckduckgo.com"
+          placeholder="chrome://newtab"
           className="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-800 rounded px-2 py-1 text-gray-900 dark:text-neutral-200 outline-none focus:border-sky-500 text-xs"
         />
         <span className="text-[10px] text-gray-500 dark:text-neutral-500">

@@ -46,8 +46,8 @@ export const GenericPanel: React.FC<GenericPanelProps> = ({ panel, title }) => {
         <div className="flex flex-col gap-2 p-3 bg-neutral-950 border border-neutral-800 rounded-md">
           <span className="font-semibold text-neutral-200">Default Search Engine</span>
           <select className="bg-neutral-900 border border-neutral-800 rounded px-2 py-1 text-neutral-200 outline-none">
-            <option value="duckduckgo">DuckDuckGo (Default)</option>
-            <option value="google">Google</option>
+            <option value="google">Google (Default)</option>
+            <option value="duckduckgo">DuckDuckGo</option>
             <option value="bing">Bing</option>
             <option value="brave">Brave</option>
           </select>

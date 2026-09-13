@@ -77,12 +77,16 @@ export const ChromeToolbar: React.FC = () => {
 
   const handleGoHome = async () => {
     let target = localStorage.getItem('chrome_homepage');
+    if (target && target.includes('duckduckgo.com')) {
+      try { localStorage.removeItem('chrome_homepage'); } catch {}
+      target = null;
+    }
     const api = getChromeAPI();
     if (!target && api?.system?.getConfig) {
       try {
         const cfg = await api.system.getConfig();
         const remote = cfg?.settings?.homepage;
-        if (remote) target = remote;
+        if (remote && !remote.includes('duckduckgo.com')) target = remote;
       } catch { }
     }
     navigate(target || 'chrome://newtab');
