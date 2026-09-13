@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "description": "Chrome Lite Electron Backend",
   "author": "Anum Hosen <anumhosen@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anumhosen/chrome-lite.git"
+  },
   "main": "main.js",
   "scripts": {
     "start": "electron .",
