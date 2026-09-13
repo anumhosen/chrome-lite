@@ -1,0 +1,37 @@
+{
+  "name": "chrome-lite",
+  "productName": "Chrome Lite",
+  "version": "0.2.0",
+  "description": "Chrome Lite - High-Performance Developer & Research Browser",
+  "author": "Anum Hosen <anumhosen@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/anumhosen/chrome-lite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anumhosen/chrome-lite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anumhosen/chrome-lite/issues",
+    "email": "anumhosen@gmail.com"
+  },
+  "main": "electron/main.js",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:electron": "npm start --prefix electron",
+    "dev": "concurrently -k -n \"FRONTEND,ELECTRON\" -c \"cyan,magenta\" \"npm run dev:frontend\" \"wait-on tcp:5173 && npm run dev:electron\"",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:icons": "electron-icon-builder --input=electron/assets/icon.png --output=electron/assets",
+    "build": "npm run build:frontend",
+    "rebuild": "npm run rebuild --prefix electron",
+    "start": "npm run build && npm start --prefix electron",
+    "dist": "npm run build && npm run build --prefix electron",
+    "dist:win": "npm run build && npm run build:win --prefix electron",
+    "dist:linux": "npm run build && npm run build:linux --prefix electron",
+    "dist:mac": "npm run build && npm run build:mac --prefix electron"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4",
+    "electron-icon-builder": "^2.0.1",
+    "wait-on": "^8.0.5"
+  }
+}

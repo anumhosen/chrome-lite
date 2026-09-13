@@ -1,0 +1,84 @@
+name: Release Chrome Lite
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+          - os: ubuntu-latest
+            target: --linux
+          - os: macos-latest
+            target: --mac
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: |
+            electron/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools icnsutils graphicsmagick libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+      - name: Install root dependencies
+        run: npm ci || npm install
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci || npm --prefix frontend install
+
+      - name: Install electron dependencies
+        run: npm --prefix electron ci || npm --prefix electron install
+
+      - name: Rebuild native dependencies (sqlite3)
+        run: npm --prefix electron run rebuild
+
+      - name: Build frontend
+        run: npm run build:frontend
+
+      - name: Generate multi-platform app icons
+        run: npm run build:icons
+
+      - name: Package with Electron Builder
+        working-directory: electron
+        run: npx electron-builder ${{ matrix.target }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Binaries
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          files: |
+            release/*.exe
+            release/*.deb
+            release/*.AppImage
+            release/*.dmg
+            release/*.zip
+            release/*.blockmap
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

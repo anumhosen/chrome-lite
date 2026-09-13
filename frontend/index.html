@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chrome Lite</title>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('chrome_theme') || 'dark';
+        if (saved === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        }
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body class="bg-gray-100 dark:bg-neutral-900 text-gray-900 dark:text-neutral-100 overflow-hidden select-none">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

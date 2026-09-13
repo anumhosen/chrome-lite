@@ -1,0 +1,31 @@
+{
+  "features": {
+    "blocker": true,
+    "bookmarks": true,
+    "history": true,
+    "downloads": true,
+    "profiles": true,
+    "workspaces": true,
+    "cookies": true,
+    "interceptor": true,
+    "scraper": true,
+    "automation": true,
+    "notebook": true,
+    "explorer": true,
+    "userscripts": true,
+    "scraperBuilder": true,
+    "ai": false,
+    "updater": false
+  },
+  "settings": {
+    "defaultSearchEngine": "https://www.google.com/search?q=",
+    "homepage": "chrome://newtab",
+    "newTabUrl": "chrome://newtab",
+    "showStatusBar": false,
+    "restoreSession": true,
+    "lowRamMode": true,
+    "maxInactiveTabMinutes": 15,
+    "defaultProfile": "default",
+    "defaultWorkspace": "personal"
+  }
+}

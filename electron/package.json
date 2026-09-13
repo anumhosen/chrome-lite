@@ -1,0 +1,107 @@
+{
+  "name": "chrome-lite-backend",
+  "version": "0.2.0",
+  "description": "Chrome Lite Electron Backend",
+  "author": "Anum Hosen <anumhosen@gmail.com>",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "rebuild": "npx electron-rebuild -f -w sqlite3",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.2.0",
+    "electron": "30.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.anumhosen.chromelite",
+    "productName": "Chrome Lite",
+    "copyright": "Copyright © 2026 Anum Hosen",
+    "directories": {
+      "output": "../release"
+    },
+    "asar": true,
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "ipc/**/*",
+      "modules/**/*",
+      "services/**/*",
+      "main.js",
+      "preload.js",
+      "node_modules/sqlite3/**/*",
+      "node_modules/bindings/**/*",
+      "node_modules/file-uri-to-path/**/*",
+      "!data/*.db",
+      "!data/cookies/*",
+      "!data/sessions/*",
+      "!data/profiles/*",
+      "!data/exports/*",
+      "!data/downloads/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icons/win/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Chrome Lite"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Network;WebBrowser",
+      "icon": "assets/icons/png"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "assets/icons/mac/icon.icns",
+      "darkModeSupport": true
+    }
+  }
+}

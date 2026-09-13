@@ -1,0 +1,19 @@
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+release/
+dist-app/
+build/
+*.log
+
+# Local runtime databases, profiles, and user session data
+data/
+electron/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# OS metadata
+.DS_Store
+Thumbs.db
