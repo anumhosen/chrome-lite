@@ -433,6 +433,24 @@ export const chromeApi = {
       if (api?.downloads?.clearQueue) await api.downloads.clearQueue();
     },
 
+    async clear(): Promise<void> {
+      const api = getChromeAPI();
+      if (api?.downloads?.clear) await api.downloads.clear();
+      else if (api?.downloads?.clearQueue) await api.downloads.clearQueue();
+    },
+
+    async remove(id: string): Promise<boolean> {
+      const api = getChromeAPI();
+      if (!api?.downloads?.remove) return false;
+      return api.downloads.remove(id);
+    },
+
+    async openFolder(): Promise<boolean> {
+      const api = getChromeAPI();
+      if (!api?.downloads?.openFolder) return false;
+      return api.downloads.openFolder();
+    },
+
     async batchQueue(assets: any[]): Promise<void> {
       const api = getChromeAPI();
       if (api?.downloads?.batchQueue) await api.downloads.batchQueue(assets);

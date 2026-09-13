@@ -7,6 +7,9 @@ function registerDownloadsIpc({ modules }) {
   ipcMain.handle("chrome:downloads:batch-queue", (e, assets) => modules.downloads.service.batchQueue(assets));
   ipcMain.handle("chrome:downloads:get-queue", () => modules.downloads.service.getQueue());
   ipcMain.handle("chrome:downloads:clear-queue", () => modules.downloads.service.clearQueue());
+  ipcMain.handle("chrome:downloads:clear", () => modules.downloads.service.clearDownloads());
+  ipcMain.handle("chrome:downloads:remove", (e, id) => modules.downloads.service.removeDownload(id));
+  ipcMain.handle("chrome:downloads:open-folder", () => modules.downloads.service.openFolder());
   ipcMain.handle("chrome:downloads:open-file", (e, filePath) => {
     if (filePath && fs.existsSync(filePath)) {
       shell.openPath(filePath);

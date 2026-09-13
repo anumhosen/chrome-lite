@@ -5,6 +5,31 @@ const config = require("../config");
 const logger = require("../logger").forSubsystem("BrowserService");
 const { webContents } = require("electron");
 
+function getChromeTabTitle(url) {
+  if (!url || !url.startsWith("chrome://")) return undefined;
+  const page = url.replace("chrome://", "").split("/")[0].toLowerCase();
+  const TITLES = {
+    newtab: "New Tab",
+    home: "New Tab",
+    extensions: "Extensions",
+    apps: "Chrome Apps",
+    settings: "Settings",
+    history: "History",
+    downloads: "Downloads",
+    bookmarks: "Bookmarks",
+    notebook: "Chrome Notebook",
+    explorer: "Resource Explorer",
+    interceptor: "API Inspector",
+    userscripts: "Userscripts Manager",
+    scraper: "Scraper Builder",
+    "scraper-builder": "Scraper Builder",
+    memory: "System Performance",
+    system: "System Performance",
+    console: "Developer Console"
+  };
+  return TITLES[page] || (page.charAt(0).toUpperCase() + page.slice(1));
+}
+
 class BrowserService {
   constructor() {
     this.mainWindow = null;
@@ -84,23 +109,7 @@ class BrowserService {
 
     let chromeTitle = undefined;
     if (url.startsWith("chrome://")) {
-      const page = url.replace("chrome://", "").split("/")[0].toLowerCase();
-      const TITLES = {
-        settings: "Settings",
-        history: "History",
-        downloads: "Downloads",
-        bookmarks: "Bookmarks",
-        notebook: "Chrome Notebook",
-        explorer: "Resource Explorer",
-        interceptor: "API Inspector",
-        userscripts: "Userscripts Manager",
-        scraper: "Scraper Builder",
-        "scraper-builder": "Scraper Builder",
-        memory: "System Performance",
-        system: "System Performance",
-        console: "Developer Console"
-      };
-      chromeTitle = TITLES[page] || (page.charAt(0).toUpperCase() + page.slice(1));
+      chromeTitle = getChromeTabTitle(url);
     }
 
     const updates = { url };
@@ -126,6 +135,12 @@ class BrowserService {
   }
 
   reload(tabId) {
+    const tab = tabManager.getTab(tabId);
+    if (tab && tab.url && tab.url.startsWith("chrome://")) {
+      const chromeTitle = getChromeTabTitle(tab.url);
+      webviewBridge.notifyRenderer("chrome:tab-updated", { tabId, url: tab.url, title: chromeTitle || tab.title });
+      return;
+    }
     const contents = webviewBridge.getContents(tabId);
     if (contents) {
       contents.reload();

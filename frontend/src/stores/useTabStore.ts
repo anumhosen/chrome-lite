@@ -258,8 +258,17 @@ export const useTabStore = create<TabState>((set, get) => ({
     if (get().activeTabId && api?.tabs) await api.tabs.goForward(get().activeTabId!);
   },
   reload: async () => {
+    const { activeTabId, tabs } = get();
+    if (!activeTabId) return;
+    const currentTab = tabs.find((t) => t.id === activeTabId);
+    if (currentTab?.url && (currentTab.url.startsWith('chrome://') || currentTab.url.startsWith('chrome:'))) {
+      set((state) => ({
+        tabs: state.tabs.map((t) => (t.id === activeTabId ? { ...t, key: Date.now() } : t)),
+      }));
+      return;
+    }
     const api = getChromeAPI();
-    if (get().activeTabId && api?.tabs) await api.tabs.reload(get().activeTabId!);
+    if (api?.tabs) await api.tabs.reload(activeTabId);
   },
   setUrlInput: (val: string) => set({ urlInput: val }),
   updateTab: (tab: any) => {

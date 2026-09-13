@@ -95,6 +95,7 @@ class WebViewBridge {
     });
 
     contents.on("did-navigate", (event, url) => {
+      if (url === "about:blank") return;
       const tabId = this.contentsToTabMap.get(contents.id);
       if (tabId) {
         const title = contents.getTitle() || url;
@@ -108,6 +109,7 @@ class WebViewBridge {
     });
 
     contents.on("did-navigate-in-page", (event, url) => {
+      if (url === "about:blank") return;
       const tabId = this.contentsToTabMap.get(contents.id);
       if (tabId) {
         const title = contents.getTitle() || url;

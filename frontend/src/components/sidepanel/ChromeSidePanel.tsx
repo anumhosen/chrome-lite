@@ -190,7 +190,7 @@ export const ChromeSidePanel: React.FC = () => {
       </div>
 
       {/* Side Panel Content Body */}
-      <div className="flex-1 overflow-y-auto p-3 text-gray-800 dark:text-neutral-200 text-xs">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col text-gray-800 dark:text-neutral-200 text-xs">
         <PanelRenderer panel={norm} mode="drawer" />
       </div>
     </aside>

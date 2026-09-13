@@ -152,9 +152,16 @@ export const ChromeToolbar: React.FC = () => {
         {/* Left Security / Search Icon */}
         <div className="flex items-center justify-center mr-2 text-gray-500 dark:text-neutral-400">
           {isInternalUrl ? (
-            <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
-              chrome
-            </span>
+            <img
+              src="./icon.png"
+              alt="Chrome"
+              className="w-4 h-4 object-contain rounded-sm"
+              onError={(e) => {
+                if (!e.currentTarget.src.endsWith('/icon.png')) {
+                  e.currentTarget.src = '/icon.png';
+                }
+              }}
+            />
           ) : isSecure ? (
             <VscLock size={13} className="text-gray-500 dark:text-neutral-400" title="Connection is secure" />
           ) : (

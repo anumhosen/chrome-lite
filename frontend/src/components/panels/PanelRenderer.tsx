@@ -135,7 +135,7 @@ export const getPanelIcon = (panel: string, size = 16) => {
 
 export const PanelRenderer: React.FC<{ panel: string; mode?: 'drawer' | 'tab' | 'popout' }> = ({
   panel,
-  mode: _mode = 'drawer',
+  mode = 'drawer',
 }) => {
   const norm = normalizePanelName(panel);
 
@@ -150,7 +150,7 @@ export const PanelRenderer: React.FC<{ panel: string; mode?: 'drawer' | 'tab' | 
       case 'history':
         return <HistoryPanel />;
       case 'downloads':
-        return <DownloadsPanel />;
+        return <DownloadsPanel mode={mode} />;
       case 'notebook':
         return <NotebookPanel />;
       case 'explorer':
@@ -178,5 +178,19 @@ export const PanelRenderer: React.FC<{ panel: string; mode?: 'drawer' | 'tab' | 
     }
   };
 
-  return <div className="theme-panel-container h-full w-full">{renderInner()}</div>;
+  const isFormPanel = norm === 'settings' || norm === 'memory' || norm === 'scraperBuilder';
+
+  return (
+    <div
+      className={`theme-panel-container w-full h-full min-h-0 ${
+        mode === 'drawer'
+          ? isFormPanel
+            ? 'overflow-y-auto overflow-x-hidden p-3'
+            : 'overflow-hidden flex flex-col p-3'
+          : 'h-full w-full'
+      }`}
+    >
+      {renderInner()}
+    </div>
+  );
 };

@@ -17,10 +17,15 @@ export interface ChromeDownloadItem {
   filename: string;
   domain?: string;
   save_path?: string;
+  savePath?: string;
   received_bytes?: number;
+  receivedBytes?: number;
   total_bytes?: number;
+  totalBytes?: number;
   size?: number;
   state: string;
+  started_at?: string;
+  created_at?: string;
 }
 
 export interface ChromeHistoryItem {
@@ -100,6 +105,9 @@ export interface ChromeAPI {
     get: (limit?: number) => Promise<ChromeDownloadItem[]>;
     getQueue: () => Promise<ChromeDownloadItem[]>;
     clearQueue: () => Promise<void>;
+    clear?: () => Promise<void>;
+    remove?: (id: string) => Promise<boolean>;
+    openFolder?: () => Promise<boolean>;
     batchQueue: (assets: any[]) => Promise<void>;
     openFile?: (filePath: string) => Promise<boolean>;
     showItem?: (filePath: string) => Promise<boolean>;

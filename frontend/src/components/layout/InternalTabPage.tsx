@@ -41,7 +41,7 @@ export const InternalTabPage: React.FC<InternalTabPageProps> = ({ url }) => {
 
   if (isNativeChromePage) {
     return (
-      <div className="w-full h-full bg-white dark:bg-neutral-900 overflow-y-auto">
+      <div className={`w-full h-full bg-white dark:bg-neutral-900 ${norm === 'newtab' ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         <PanelRenderer panel={norm} mode="tab" />
       </div>
     );

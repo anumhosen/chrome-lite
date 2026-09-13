@@ -1,4 +1,4 @@
-const { app, session } = require("electron");
+const { app, session, webContents } = require("electron");
 const service = require("./service");
 const config = require("./config");
 
@@ -6,13 +6,28 @@ function init(appContext) {
   if (appContext && appContext.mainWindow) {
     service.init(appContext.mainWindow);
   }
+
+  // Attach to defaultSession
   if (session.defaultSession) {
     service.attachSession(session.defaultSession);
   }
-  app.on("web-contents-created", (event, contents) => {
-    if (contents.getType() === "webview" && contents.session) {
-      service.attachSession(contents.session);
+
+  // Attach to all existing webContents
+  try {
+    for (const wc of webContents.getAllWebContents()) {
+      if (wc && !wc.isDestroyed() && wc.session) {
+        service.attachSession(wc.session);
+      }
     }
+  } catch { }
+
+  // Attach to all future webContents (webviews, popups, auxiliary windows)
+  app.on("web-contents-created", (event, contents) => {
+    try {
+      if (contents && contents.session) {
+        service.attachSession(contents.session);
+      }
+    } catch { }
   });
 }
 

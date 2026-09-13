@@ -160,7 +160,7 @@ export const Viewport: React.FC = () => {
       />
       {isInternalPage && activeTab?.url && (
         <div className="absolute inset-0 z-10 w-full h-full">
-          <InternalTabPage url={activeTab.url} />
+          <InternalTabPage key={(activeTab as any).key || activeTab.id} url={activeTab.url} />
         </div>
       )}
     </main>

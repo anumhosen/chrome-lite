@@ -68,6 +68,9 @@ const chromeLiteApi = {
     batchQueue: (assets) => ipcRenderer.invoke("chrome:downloads:batch-queue", assets),
     getQueue: () => ipcRenderer.invoke("chrome:downloads:get-queue"),
     clearQueue: () => ipcRenderer.invoke("chrome:downloads:clear-queue"),
+    clear: () => ipcRenderer.invoke("chrome:downloads:clear"),
+    remove: (id) => ipcRenderer.invoke("chrome:downloads:remove", id),
+    openFolder: () => ipcRenderer.invoke("chrome:downloads:open-folder"),
     openFile: (filePath) => ipcRenderer.invoke("chrome:downloads:open-file", filePath),
     showItem: (filePath) => ipcRenderer.invoke("chrome:downloads:show-item", filePath)
   },
