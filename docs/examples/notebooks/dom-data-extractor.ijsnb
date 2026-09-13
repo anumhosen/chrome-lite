@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "title": "DOM Data & Catalog Extractor",
+    "target_domain": "*",
+    "language": "javascript",
+    "created_at": 1773446400000,
+    "updated_at": 1773446400000
+  },
+  "cells": [
+    {
+      "id": "cell_intro",
+      "cell_type": "markdown",
+      "source": "# 📑 Universal DOM Data & Listing Extractor\nThis notebook demonstrates extracting repeating listing items (articles, products, search results) directly from whichever web page is active in Chrome Lite, calculating statistical summaries, and generating a downloadable CSV."
+    },
+    {
+      "id": "cell_cards_header",
+      "cell_type": "markdown",
+      "source": "### 1. Extracting Repeating Cards / Articles\nScrapes all articles or card elements on the current page with links, images, and text:"
+    },
+    {
+      "id": "cell_cards_code",
+      "cell_type": "code",
+      "source": "const selectors = ['article', '.card', '.post', '.product', '.item', 'li'];\nlet container = null;\n\nfor (const sel of selectors) {\n  const found = document.querySelectorAll(sel);\n  if (found.length >= 3) {\n    container = found;\n    break;\n  }\n}\n\nif (!container || container.length === 0) {\n  container = document.querySelectorAll('h2, h3');\n}\n\nreturn Array.from(container).slice(0, 20).map((el, i) => {\n  const link = el.querySelector('a') || (el.tagName === 'A' ? el : null);\n  const img = el.querySelector('img');\n  const title = el.querySelector('h1, h2, h3, h4, .title')?.innerText || el.innerText.split('\\n')[0] || '';\n  \n  return {\n    Item: i + 1,\n    Title: title.trim().substring(0, 60) || '(No title)',\n    Link: link?.href || '(None)',\n    HasImage: Boolean(img?.src)\n  };\n});"
+    },
+    {
+      "id": "cell_links_audit_header",
+      "cell_type": "markdown",
+      "source": "### 2. Deep Link Audit (Internal vs External Distribution)\nClassifies all hyperlinks on the page into internal navigation vs external outbound domains:"
+    },
+    {
+      "id": "cell_links_audit_code",
+      "cell_type": "code",
+      "source": "const currentHost = window.location.hostname;\nconst allLinks = Array.from(document.querySelectorAll('a[href]'));\n\nlet internal = 0;\nlet external = 0;\nconst externalDomains = {};\n\nallLinks.forEach(a => {\n  try {\n    const url = new URL(a.href);\n    if (url.hostname === currentHost || url.hostname === '') {\n      internal++;\n    } else {\n      external++;\n      externalDomains[url.hostname] = (externalDomains[url.hostname] || 0) + 1;\n    }\n  } catch {}\n});\n\nconst topOutbound = Object.entries(externalDomains)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([domain, count]) => `${domain} (${count})`)\n  .join(', ');\n\nreturn [\n  {\n    Category: 'Internal Page Links',\n    Count: internal,\n    Percentage: `${((internal / (allLinks.length || 1)) * 100).toFixed(1)}%`\n  },\n  {\n    Category: 'Outbound External Links',\n    Count: external,\n    Percentage: `${((external / (allLinks.length || 1)) * 100).toFixed(1)}%`\n  },\n  {\n    Category: 'Top Outbound Domains',\n    Count: Object.keys(externalDomains).length,\n    Percentage: topOutbound || 'None'\n  }\n];"
+    },
+    {
+      "id": "cell_csv_header",
+      "cell_type": "markdown",
+      "source": "### 3. Generate & Download CSV From Extracted Page Data\nGenerates a clean CSV file from all hyperlinks and triggers a native browser download:"
+    },
+    {
+      "id": "cell_csv_code",
+      "cell_type": "code",
+      "source": "const links = Array.from(document.querySelectorAll('a[href]'))\n  .map((a, i) => ({\n    index: i + 1,\n    text: a.innerText.replace(/\\s+/g, ' ').trim(),\n    url: a.href\n  }))\n  .filter(l => l.text.length > 0)\n  .slice(0, 100);\n\nif (links.length === 0) return { message: 'No links found to export.' };\n\nconst csvHeader = 'Index,Text,URL\\n';\nconst csvBody = links.map(l => `\"${l.index}\",\"${l.text.replace(/\"/g, '\"\"')}\",\"${l.url}\"`).join('\\n');\nconst csvContent = csvHeader + csvBody;\n\nconst blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });\nconst a = document.createElement('a');\na.href = URL.createObjectURL(blob);\na.download = `${window.location.hostname}_links.csv`;\ndocument.body.appendChild(a);\na.click();\na.remove();\n\nreturn {\n  Status: 'Success',\n  ExportedRows: links.length,\n  FileName: `${window.location.hostname}_links.csv`\n};"
+    }
+  ]
+}

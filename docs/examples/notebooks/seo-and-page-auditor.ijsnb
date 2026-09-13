@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "SEO & Web Page Auditor",
+    "target_domain": "*",
+    "language": "javascript",
+    "created_at": 1773446400000,
+    "updated_at": 1773446400000
+  },
+  "cells": [
+    {
+      "id": "cell_intro",
+      "cell_type": "markdown",
+      "source": "# 🔍 Comprehensive SEO & Page Health Auditor\nThis notebook evaluates the technical SEO, social graph meta tags, heading structure, and accessibility of the **active browser tab**.\n\n> **Tip:** Make sure the tab you want to analyze is currently open in Chrome Lite before running these cells!"
+    },
+    {
+      "id": "cell_meta_title",
+      "cell_type": "markdown",
+      "source": "### 1. Essential Meta Tags & Document Basics\nVerifies title length, meta description, canonical URL, and viewport configuration:"
+    },
+    {
+      "id": "cell_meta_code",
+      "cell_type": "code",
+      "source": "const title = document.title || '';\nconst desc = document.querySelector('meta[name=\"description\"]')?.content || '';\nconst canonical = document.querySelector('link[rel=\"canonical\"]')?.href || '';\nconst viewport = document.querySelector('meta[name=\"viewport\"]')?.content || '';\nconst robots = document.querySelector('meta[name=\"robots\"]')?.content || 'index, follow';\nconst charset = document.characterSet || 'UTF-8';\n\nreturn [\n  {\n    Tag: 'Title',\n    Value: title,\n    Length: title.length,\n    Status: title.length >= 30 && title.length <= 60 ? 'Optimal (30-60 chars)' : 'Needs Review'\n  },\n  {\n    Tag: 'Meta Description',\n    Value: desc || '(Missing)',\n    Length: desc.length,\n    Status: desc.length >= 120 && desc.length <= 160 ? 'Optimal (120-160 chars)' : desc ? 'Review Length' : 'Missing'\n  },\n  {\n    Tag: 'Canonical URL',\n    Value: canonical || '(Self / Missing)',\n    Length: canonical.length,\n    Status: canonical ? 'Configured' : 'Missing'\n  },\n  {\n    Tag: 'Mobile Viewport',\n    Value: viewport || '(Missing)',\n    Length: viewport.length,\n    Status: viewport.includes('width=device-width') ? 'Mobile Friendly' : 'Check Viewport'\n  },\n  {\n    Tag: 'Robots Directive',\n    Value: robots,\n    Length: robots.length,\n    Status: 'OK'\n  }\n];"
+    },
+    {
+      "id": "cell_og_header",
+      "cell_type": "markdown",
+      "source": "### 2. Social Graph Tags (OpenGraph & Twitter Card)\nInspects rich preview meta tags used by Facebook, LinkedIn, X/Twitter, Slack, and Discord:"
+    },
+    {
+      "id": "cell_og_code",
+      "cell_type": "code",
+      "source": "const ogTags = [\n  'og:title',\n  'og:description',\n  'og:image',\n  'og:url',\n  'og:type',\n  'og:site_name',\n  'twitter:card',\n  'twitter:title',\n  'twitter:description',\n  'twitter:image'\n];\n\nreturn ogTags.map(prop => {\n  const el = document.querySelector(`meta[property=\"${prop}\"], meta[name=\"${prop}\"]`);\n  const content = el?.content || '';\n  return {\n    Property: prop,\n    Content: content || '(Not set)',\n    Found: Boolean(content)\n  };\n});"
+    },
+    {
+      "id": "cell_headings_header",
+      "cell_type": "markdown",
+      "source": "### 3. Heading Hierarchy (H1 - H6)\nAudits page headings to ensure a logical structure (specifically checking for a single primary H1):"
+    },
+    {
+      "id": "cell_headings_code",
+      "cell_type": "code",
+      "source": "const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'));\n\nif (headings.length === 0) {\n  return [{ Warning: 'No H1-H6 headings found on this page.' }];\n}\n\nreturn headings.slice(0, 30).map((h, i) => ({\n  Level: h.tagName,\n  Text: h.innerText.trim() || '(Empty)',\n  Index: i + 1\n}));"
+    },
+    {
+      "id": "cell_images_header",
+      "cell_type": "markdown",
+      "source": "### 4. Image Accessibility (Alt Attribute Audit)\nScans images for missing alternative text required for screen readers and SEO:"
+    },
+    {
+      "id": "cell_images_code",
+      "cell_type": "code",
+      "source": "const images = Array.from(document.querySelectorAll('img'));\n\nconst missingAlt = images.filter(img => !img.hasAttribute('alt') || img.alt.trim() === '');\n\nreturn [\n  {\n    Metric: 'Total Images',\n    Count: images.length,\n    Health: 'Info'\n  },\n  {\n    Metric: 'Images Missing Alt Text',\n    Count: missingAlt.length,\n    Health: missingAlt.length === 0 ? '100% Accessible' : 'Needs Fixes'\n  }\n];"
+    }
+  ]
+}

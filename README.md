@@ -41,6 +41,19 @@ All features are implemented as modular built-in extensions with pinned toolbar 
 
 ---
 
+## 📚 Documentation & User Guides
+
+Explore our complete documentation suite, guides, and pre-built scripts in the [docs/ directory](file:///d:/Development/electron/Chrome%20Lite/docs/README.md):
+
+- **[01 - Getting Started](file:///d:/Development/electron/Chrome%20Lite/docs/guides/01-getting-started.md)**: Navigation, Omnibox, Tabs, Workspaces, and Profiles.
+- **[02 - Interactive Dev Notebook](file:///d:/Development/electron/Chrome%20Lite/docs/guides/02-dev-notebook.md)**: CodeMirror 6 live JavaScript execution, DOM evaluation, and data tables.
+- **[03 - Userscripts Engine](file:///d:/Development/electron/Chrome%20Lite/docs/guides/03-userscripts.md)**: Greasemonkey/Tampermonkey script injection, `GM_*` APIs, and matching.
+- **[04 - API Interceptor & Mocking](file:///d:/Development/electron/Chrome%20Lite/docs/guides/04-api-interceptor-and-mocking.md)**: Live network inspection, mock rules, HAR 1.2, and OpenAPI 3.0.
+- **[05 - Macro Automation & Playwright](file:///d:/Development/electron/Chrome%20Lite/docs/guides/05-macro-automation-and-playwright.md)**: Visual recorder, condition loops, and test export.
+- **[06 - Web Scraper & Site Mirroring](file:///d:/Development/electron/Chrome%20Lite/docs/guides/06-web-scraper-and-mirroring.md)**: Visual element picker, table scraper, media asset grabber, and site mirroring.
+- **[07 - Privacy & System Performance](file:///d:/Development/electron/Chrome%20Lite/docs/guides/07-privacy-and-system-performance.md)**: Chrome Shield ad/tracker blocker, Cookie Jar, and low-RAM tab hibernation.
+- **[Example Userscripts](file:///d:/Development/electron/Chrome%20Lite/docs/examples/userscripts/)** & **[Example JavaScript Notebooks](file:///d:/Development/electron/Chrome%20Lite/docs/examples/notebooks/)**.
+
 ### 🖥️ Internal Chrome Apps (`chrome://` Pages)
 Navigate to internal pages via the Omnibox or the 3-dots menu:
 - `chrome://newtab` — Chrome Lite start page with search and top site shortcuts.
