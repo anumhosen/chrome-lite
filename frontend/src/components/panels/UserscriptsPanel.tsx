@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import Editor from '@monaco-editor/react';
+import React, { useEffect, useState, useMemo } from 'react';
+import CodeMirror, { keymap, Prec } from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 import { VscAdd, VscEdit, VscPlay, VscTrash, VscArrowLeft, VscSave } from 'react-icons/vsc';
 import { useTabStore } from '../../stores/useTabStore';
 import { useThemeStore } from '../../stores/useThemeStore';
@@ -79,6 +80,22 @@ export const UserscriptsPanel: React.FC = () => {
     await loadScripts();
   };
 
+  const codeMirrorExtensions = useMemo(() => {
+    return [
+      javascript(),
+      Prec.highest(
+        keymap.of([
+          {
+            key: 'Mod-s',
+            run: () => {
+              handleSave();
+              return true;
+            },
+          },
+        ])
+      ),
+    ];
+  }, [activeScript]);
 
   if (isEditing && activeScript) {
     return (
@@ -100,30 +117,29 @@ export const UserscriptsPanel: React.FC = () => {
           />
           <button
             onClick={handleSave}
+            title="Save script (Ctrl+S)"
             className="flex items-center gap-1 px-3 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium transition-colors"
           >
             <VscSave size={13} />
             <span>Save</span>
           </button>
         </div>
-        <div className="flex-1 border border-gray-200 dark:border-neutral-800 rounded overflow-hidden">
-          <Editor
+        <div className="flex-1 border border-gray-200 dark:border-neutral-800 rounded overflow-hidden bg-white dark:bg-neutral-950">
+          <CodeMirror
             height="100%"
-            defaultLanguage="javascript"
-            language="javascript"
             value={activeScript.code}
-            theme={theme === 'dark' ? 'vs-dark' : 'light'}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 12,
-              lineNumbers: 'on',
-              wordWrap: 'on',
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
+            theme={theme === 'dark' ? 'dark' : 'light'}
+            extensions={codeMirrorExtensions}
+            onChange={(val) => setActiveScript({ ...activeScript, code: val })}
+            basicSetup={{
+              lineNumbers: true,
+              foldGutter: false,
+              dropCursor: false,
+              allowMultipleSelections: false,
+              indentOnInput: true,
               tabSize: 2,
-              fontFamily: 'Consolas, "Courier New", monospace',
             }}
-            onChange={(val) => setActiveScript({ ...activeScript, code: val || '' })}
+            className="h-full text-xs font-mono"
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import Editor from '@monaco-editor/react';
+import CodeMirror, { keymap, Prec } from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
 import {
   VscPlay,
   VscLoading,
@@ -48,9 +49,6 @@ export const NotebookCellComponent: React.FC<NotebookCellProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'raw'>('table');
 
-  const lineCount = (cell.source || '').split('\n').length;
-  const editorHeight = Math.max(64, Math.min(480, lineCount * 19 + 18));
-
   // Detect if output is an array of objects for tabular visualization
   const tabularData = useMemo(() => {
     if (!cell.outputStr) return null;
@@ -79,6 +77,41 @@ export const NotebookCellComponent: React.FC<NotebookCellProps> = ({
     runCell(cell.id, activeTabId);
   };
 
+  const handleRunAndAdvance = () => {
+    runCell(cell.id, activeTabId);
+    const { cells, setActiveCellId, addCell } = useNotebookStore.getState();
+    const currentIndex = cells.findIndex((c) => c.id === cell.id);
+    if (currentIndex !== -1 && currentIndex < cells.length - 1) {
+      setActiveCellId(cells[currentIndex + 1].id);
+    } else {
+      addCell('code', cell.id);
+    }
+  };
+
+  const codeMirrorExtensions = useMemo(() => {
+    return [
+      javascript({ jsx: true, typescript: true }),
+      Prec.highest(
+        keymap.of([
+          {
+            key: 'Mod-Enter',
+            run: () => {
+              handleRun();
+              return true;
+            },
+          },
+          {
+            key: 'Shift-Enter',
+            run: () => {
+              handleRunAndAdvance();
+              return true;
+            },
+          },
+        ])
+      ),
+    ];
+  }, [cell.id, activeTabId]);
+
   const handleCopyOutput = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (cell.outputStr) {
@@ -89,9 +122,12 @@ export const NotebookCellComponent: React.FC<NotebookCellProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.ctrlKey && e.key === 'Enter') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       handleRun();
+    } else if (e.shiftKey && e.key === 'Enter') {
+      e.preventDefault();
+      handleRunAndAdvance();
     }
   };
 
@@ -233,34 +269,23 @@ export const NotebookCellComponent: React.FC<NotebookCellProps> = ({
         {/* Content Area */}
         <div className="flex-1 min-w-0 overflow-hidden">
           {cell.cell_type === 'code' ? (
-            <div className="border border-gray-200 dark:border-neutral-800 rounded bg-gray-50/70 dark:bg-neutral-950 overflow-hidden">
-              <Editor
-                height={`${editorHeight}px`}
-                language="javascript"
-                theme={theme === 'dark' ? 'vs-dark' : 'light'}
+            <div className="border border-gray-200 dark:border-neutral-800 rounded bg-white dark:bg-neutral-950 overflow-hidden text-xs">
+              <CodeMirror
                 value={cell.source}
-                onChange={(val) => updateCellSource(cell.id, val || '')}
-                options={{
-                  fontSize: 12,
-                  fontFamily: 'Consolas, "Courier New", monospace',
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  lineNumbers: 'on',
-                  lineNumbersMinChars: 3,
-                  glyphMargin: false,
-                  folding: false,
-                  lineDecorationsWidth: 0,
-                  renderLineHighlight: 'all',
-                  wordWrap: 'on',
+                minHeight="48px"
+                maxHeight="500px"
+                theme={theme === 'dark' ? 'dark' : 'light'}
+                extensions={codeMirrorExtensions}
+                onChange={(val) => updateCellSource(cell.id, val)}
+                basicSetup={{
+                  lineNumbers: true,
+                  foldGutter: false,
+                  dropCursor: false,
+                  allowMultipleSelections: false,
+                  indentOnInput: true,
                   tabSize: 2,
-                  automaticLayout: true,
-                  overviewRulerLanes: 0,
-                  scrollbar: {
-                    vertical: 'auto',
-                    horizontal: 'hidden',
-                    verticalScrollbarSize: 6,
-                  },
                 }}
+                className="text-xs font-mono"
               />
             </div>
           ) : cell.isEditingText ? (

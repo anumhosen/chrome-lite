@@ -35,7 +35,7 @@ All features are implemented as modular built-in extensions with pinned toolbar 
    - **Playwright Test Export**: Export any recorded or configured flow directly to a TypeScript Playwright test script (`.spec.ts`).
    - **Autonomous Cron Scheduler**: Schedule automated workflows with interval timers and webhook notifications.
    - **Headless Mode**: Run flows in background hidden windows without UI interruption.
-6. 📓 **Interactive Dev Notebook**: Live JavaScript execution notebook connected to any active web tab with CodeMirror / Monaco editor integration.
+6. 📓 **Interactive Dev Notebook**: Live JavaScript execution notebook connected to any active web tab with ultra-fast, lightweight CodeMirror 6 integration.
 7. 🔍 **Visual Web Scraper**: Element selector picker and data table extractor with export to JSON/CSV.
 8. 📦 **Media & Asset Grabber**: Deep scan page assets (images, videos, audio, fonts) with one-click batch download.
 
@@ -179,7 +179,7 @@ npm run dist:mac
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Bundler**: [Vite](https://vitejs.dev/) (v6)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Editors**: [CodeMirror](https://codemirror.net/) & [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+- **Editor**: Lightweight [CodeMirror 6](https://codemirror.net/) (@uiw/react-codemirror)
 - **Database**: Embedded [SQLite3](https://github.com/TryGhost/node-sqlite3)
 
 ---
